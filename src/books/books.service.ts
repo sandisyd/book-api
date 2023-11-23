@@ -1,47 +1,80 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BookRepository } from './repository/book.repository';
+import { FilterBook } from './dto/filter_book.dto';
+import { Book } from './entity/book.entity';
+
 @Injectable()
 export class BooksService {
-  private books: any[] = [];
 
-  getBooks(title: string, author: string, category: string): any[] {
-    console.log(`Hasil getAllBooks : ${this.books}`);
-    return this.books;
-  }
+  constructor(@InjectRepository(BookRepository) private readonly bookRepository: BookRepository){}
 
-  getBook(id: string){
-    const bookIdx = this.findBookById(id)
-    return this.books[bookIdx]
+  getBooks(filter: FilterBook): Promise<Book[]>{
+    return this.bookRepository.getBooks(filter)
   }
-  deleteBook(id: string){
-    const bookIdx = this.findBookById(id)
-    this.books.splice(bookIdx, 1)
-  }
+  // private books: any[] = [];
 
-  createBook(title: string, author: string, category: string) {
-    this.books.push({
-      id: uuidv4(),
-      title,
-      author,
-      category,
-    });
-  }
+  // getBooks(filterBookDto: FilterBook): any[] {
+  //   const {title, author, category, min_year, max_year} = filterBookDto;
+  //   console.log(`Hasil getAllBooks : ${this.books}`);
+  //   const books = this.books.filter((book) =>{
+  //     if (title && book.title != title) {
+  //       return false;
+  //     }
+  //     if(author && book.author != author){
+  //       return false;
+  //     }
+  //     if(category && book.category != category){
+  //       return false;
+  //     }
+  //     if(min_year && book.year < min_year){
+  //       return false;
+  //     }
+  //     if (max_year && book.year > max_year) {
+  //       return false;
+  //     }
+  //     return true;
+  //   });
+  //   return books;
+  // }
 
-  updateBook(id: string, title: string, author: string, category: string) {
-    const idBook = this.findBookById(id);
-    if (idBook !== -1) {
+  // getBook(id: string){
+  //   const bookIdx = this.findBookById(id)
+  //   return this.books[bookIdx]
+  // }
+  // deleteBook(id: string){
+  //   const bookIdx = this.findBookById(id)
+  //   this.books.splice(bookIdx, 1)
+  // }
+
+  // createBook(createBookDto: CreateBookDto) {
+  //   const { title, author, category, year} = createBookDto;
+  //   this.books.push({
+  //     id: uuidv4(),
+  //     title,
+  //     author,
+  //     category,
+  //     year
+  //   });
+  // }
+
+  // updateBook(id: string, updateBookDto: UpdateBookDto) {
+  //   const {title, author, category, year} = updateBookDto
+  //   const idBook = this.findBookById(id);
+  //   if (idBook !== -1) {
       
-      this.books[idBook].title = title;
-      this.books[idBook].author = author;
-      this.books[idBook].category = category;
-    }
-  }
+  //     this.books[idBook].title = title;
+  //     this.books[idBook].author = author;
+  //     this.books[idBook].category = category;
+  //     this.books[idBook].year = year;
+  //   }
+  // }
 
-  findBookById(id: string) {
-    const bookId = this.books.findIndex((book) => book.id === id);
-    if (bookId === -1) {
-      throw new NotFoundException(`Book with id ${id} is not found`);
-    }
-    return bookId;
-  }
+  // findBookById(id: string) {
+  //   const bookId = this.books.findIndex((book) => book.id === id);
+  //   if (bookId === -1) {
+  //     throw new NotFoundException(`Book with id ${id} is not found`);
+  //   }
+  //   return bookId;
+  // }
 }
